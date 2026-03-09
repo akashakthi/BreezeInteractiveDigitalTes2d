@@ -5,7 +5,7 @@ using BreezeInteractive.Runtime.Gameplay.Common.Combat;
 
 namespace BreezeInteractive.Runtime.Gameplay.Enemy.Dummy
 {
-    public sealed class DummyTarget : MonoBehaviour, IDamageable
+    public sealed class DummyTarget : MonoBehaviour, IDamageable, IHealthSource
     {
         [SerializeField] private int maxHealth = 200;
         [SerializeField] private bool destroyOnDeath = true;
@@ -16,7 +16,6 @@ namespace BreezeInteractive.Runtime.Gameplay.Enemy.Dummy
         public int CurrentHealth { get; private set; }
         public int MaxHealth => maxHealth;
         public bool IsDead => CurrentHealth <= 0;
-        public float NormalizedHealth => maxHealth <= 0 ? 0f : (float)CurrentHealth / maxHealth;
 
         public event Action<int, int> HealthChanged;
         public event Action Died;
@@ -26,7 +25,6 @@ namespace BreezeInteractive.Runtime.Gameplay.Enemy.Dummy
         private void Awake()
         {
             CurrentHealth = maxHealth;
-            HealthChanged?.Invoke(CurrentHealth, maxHealth);
         }
 
         public void TakeDamage(int amount)
@@ -43,7 +41,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Enemy.Dummy
                 CurrentHealth = 0;
             }
 
-            HealthChanged?.Invoke(CurrentHealth, maxHealth);
+            HealthChanged?.Invoke(CurrentHealth, MaxHealth);
 
             if (CurrentHealth <= 0)
             {

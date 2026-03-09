@@ -5,7 +5,7 @@ using BreezeInteractive.Runtime.Gameplay.Common.Combat;
 
 namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat
 {
-    public sealed class NinjaHealth : MonoBehaviour, IDamageable
+    public sealed class NinjaHealth : MonoBehaviour, IDamageable, IHealthSource
     {
         [SerializeField] private int maxHealth = 100;
         [SerializeField] private GameObject healthBarRoot;
@@ -15,7 +15,6 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat
         public int CurrentHealth { get; private set; }
         public int MaxHealth => maxHealth;
         public bool IsDead => CurrentHealth <= 0;
-        public float NormalizedHealth => maxHealth <= 0 ? 0f : (float)CurrentHealth / maxHealth;
 
         public event Action<int, int> HealthChanged;
         public event Action<int> Damaged;
@@ -26,14 +25,13 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat
         private void Awake()
         {
             CurrentHealth = maxHealth;
-            HealthChanged?.Invoke(CurrentHealth, maxHealth);
         }
 
         public void ResetHealth()
         {
             CurrentHealth = maxHealth;
             _isDeathProcessing = false;
-            HealthChanged?.Invoke(CurrentHealth, maxHealth);
+            HealthChanged?.Invoke(CurrentHealth, MaxHealth);
         }
 
         public void TakeDamage(int amount)
@@ -50,7 +48,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat
                 CurrentHealth = 0;
             }
 
-            HealthChanged?.Invoke(CurrentHealth, maxHealth);
+            HealthChanged?.Invoke(CurrentHealth, MaxHealth);
             Damaged?.Invoke(CurrentHealth);
 
             if (CurrentHealth <= 0)

@@ -167,9 +167,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8948f1218d9f80f438ba53b673353cea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  owner: {fileID: 1762805826}
   fillRenderer: {fileID: 16568718}
-  ninjaHealth: {fileID: 0}
-  dummyTarget: {fileID: 1762805827}
 --- !u!212 &16568718
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -795,9 +794,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8948f1218d9f80f438ba53b673353cea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  owner: {fileID: 1262723102}
   fillRenderer: {fileID: 1250077903}
-  ninjaHealth: {fileID: 1262723106}
-  dummyTarget: {fileID: 0}
 --- !u!1 &1262723099
 GameObject:
   m_ObjectHideFlags: 0
@@ -1007,7 +1005,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   healthBarRoot: {fileID: 1093330457}
-  destroyOwnerOnDeath: 0
+  destroyOwnerOnDeath: 1
   destroyDelay: 0.1
 --- !u!114 &1262723107
 MonoBehaviour:

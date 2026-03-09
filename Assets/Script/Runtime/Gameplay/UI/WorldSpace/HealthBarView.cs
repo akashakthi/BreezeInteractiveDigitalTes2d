@@ -1,20 +1,20 @@
 using UnityEngine;
-using BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat;
-using BreezeInteractive.Runtime.Gameplay.Enemy.Dummy;
+using BreezeInteractive.Runtime.Gameplay.Common.Combat;
 
 namespace BreezeInteractive.Runtime.Gameplay.UI.WorldSpace
 {
     public sealed class HealthBarView : MonoBehaviour
     {
+        [Header("Source")]
+        [SerializeField] private Transform owner;
+
         [Header("Fill")]
         [SerializeField] private SpriteRenderer fillRenderer;
 
-        [Header("Optional Sources")]
-        [SerializeField] private NinjaHealth ninjaHealth;
-        [SerializeField] private DummyTarget dummyTarget;
-
+        private IHealthSource _healthSource;
         private float _initialWidth;
         private Vector3 _initialFillLocalPosition;
+        private bool _isInitialized;
 
         private void Awake()
         {
@@ -25,40 +25,65 @@ namespace BreezeInteractive.Runtime.Gameplay.UI.WorldSpace
             }
         }
 
+        private void Start()
+        {
+            ResolveSource();
+            RefreshImmediate();
+        }
+
         private void OnEnable()
         {
-            if (ninjaHealth != null)
-            {
-                ninjaHealth.HealthChanged += HandleNinjaHealthChanged;
-                HandleNinjaHealthChanged(ninjaHealth.CurrentHealth, ninjaHealth.MaxHealth);
-            }
+            ResolveSource();
 
-            if (dummyTarget != null)
+            if (_healthSource != null)
             {
-                dummyTarget.HealthChanged += HandleDummyHealthChanged;
-                HandleDummyHealthChanged(dummyTarget.CurrentHealth, dummyTarget.MaxHealth);
+                _healthSource.HealthChanged += HandleHealthChanged;
             }
         }
 
         private void OnDisable()
         {
-            if (ninjaHealth != null)
+            if (_healthSource != null)
             {
-                ninjaHealth.HealthChanged -= HandleNinjaHealthChanged;
-            }
-
-            if (dummyTarget != null)
-            {
-                dummyTarget.HealthChanged -= HandleDummyHealthChanged;
+                _healthSource.HealthChanged -= HandleHealthChanged;
             }
         }
 
-        private void HandleNinjaHealthChanged(int current, int max)
+        private void ResolveSource()
         {
-            UpdateFill(current, max);
+            if (_isInitialized)
+            {
+                return;
+            }
+
+            if (owner == null)
+            {
+                Debug.LogError($"{name}: Owner is not assigned.", this);
+                return;
+            }
+
+            _healthSource = owner.GetComponent<IHealthSource>();
+
+            if (_healthSource == null)
+            {
+                Debug.LogError($"{name}: Owner does not contain a component that implements IHealthSource.", this);
+                return;
+            }
+
+            _isInitialized = true;
         }
 
-        private void HandleDummyHealthChanged(int current, int max)
+        private void RefreshImmediate()
+        {
+            if (_healthSource == null)
+            {
+                return;
+            }
+
+            HandleHealthChanged(_healthSource.CurrentHealth, _healthSource.MaxHealth);
+        }
+
+        private void HandleHealthChanged(int current, int max)
         {
             UpdateFill(current, max);
         }
@@ -81,6 +106,8 @@ namespace BreezeInteractive.Runtime.Gameplay.UI.WorldSpace
                 _initialFillLocalPosition.y,
                 _initialFillLocalPosition.z
             );
+
+            fillRenderer.enabled = newWidth > 0f;
         }
     }
 }
