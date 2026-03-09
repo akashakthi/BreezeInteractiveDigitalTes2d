@@ -29,6 +29,16 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Movement
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(checkPoint.position, radius);
         }
+
+
+        private void OnValidate()
+        {
+            if (radius < 0f)
+            {
+                radius = 0f;
+            }
+        }
+
 #endif
     }
 }

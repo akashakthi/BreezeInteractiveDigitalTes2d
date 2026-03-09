@@ -84,5 +84,20 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat
                 Destroy(gameObject);
             }
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (maxHealth < 1)
+            {
+                maxHealth = 1;
+            }
+
+            if (destroyDelay < 0f)
+            {
+                destroyDelay = 0f;
+            }
+        }
+#endif
     }
 }

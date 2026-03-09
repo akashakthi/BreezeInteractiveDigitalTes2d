@@ -178,5 +178,35 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Core
         {
             _health.TakeDamage(amount);
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (moveSpeed < 0f)
+            {
+                moveSpeed = 0f;
+            }
+
+            if (jumpForce < 0f)
+            {
+                jumpForce = 0f;
+            }
+
+            if (attackDuration < 0f)
+            {
+                attackDuration = 0f;
+            }
+
+            if (hurtDuration < 0f)
+            {
+                hurtDuration = 0f;
+            }
+
+            if (attackHitTime < 0f)
+            {
+                attackHitTime = 0f;
+            }
+        }
+#endif
     }
 }

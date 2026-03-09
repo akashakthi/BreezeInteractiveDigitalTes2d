@@ -76,6 +76,19 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
         }
+
+        private void OnValidate()
+        {
+            if (attackRadius < 0f)
+            {
+                attackRadius = 0f;
+            }
+
+            if (attackDamage < 0)
+            {
+                attackDamage = 0;
+            }
+        }
 #endif
     }
 }

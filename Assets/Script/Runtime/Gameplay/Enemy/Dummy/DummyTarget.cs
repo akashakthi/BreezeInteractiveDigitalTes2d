@@ -12,6 +12,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Enemy.Dummy
         [SerializeField] private float destroyDelay = 0.1f;
         [SerializeField] private GameObject deathVisual;
         [SerializeField] private GameObject healthBarRoot;
+        [SerializeField] private Collider2D targetCollider;
 
         public int CurrentHealth { get; private set; }
         public int MaxHealth => maxHealth;
@@ -63,6 +64,11 @@ namespace BreezeInteractive.Runtime.Gameplay.Enemy.Dummy
 
             _isDeathProcessing = true;
 
+            if (targetCollider != null)
+            {
+                targetCollider.enabled = false;
+            }
+
             Died?.Invoke();
 
             if (healthBarRoot != null)
@@ -81,5 +87,25 @@ namespace BreezeInteractive.Runtime.Gameplay.Enemy.Dummy
                 Destroy(gameObject);
             }
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (maxHealth < 1)
+            {
+                maxHealth = 1;
+            }
+
+            if (destroyDelay < 0f)
+            {
+                destroyDelay = 0f;
+            }
+
+            if (targetCollider == null)
+            {
+                targetCollider = GetComponent<Collider2D>();
+            }
+        }
+#endif
     }
 }

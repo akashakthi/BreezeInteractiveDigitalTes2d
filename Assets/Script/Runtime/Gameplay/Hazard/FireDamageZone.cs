@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using BreezeInteractive.Runtime.Gameplay.Common.Combat;
@@ -10,7 +11,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Hazard
         [SerializeField] private int damagePerTick = 20;
         [SerializeField] private float tickInterval = 1f;
 
-        private readonly Dictionary<IDamageable, float> _timers = new Dictionary<IDamageable, float>();
+        private readonly Dictionary<IDamageable, Coroutine> _activeDamageRoutines = new();
 
         private void Reset()
         {
@@ -26,33 +27,13 @@ namespace BreezeInteractive.Runtime.Gameplay.Hazard
                 return;
             }
 
-            if (!_timers.ContainsKey(damageable))
-            {
-                _timers.Add(damageable, 0f);
-                damageable.TakeDamage(damagePerTick);
-            }
-        }
-
-        private void OnTriggerStay2D(Collider2D other)
-        {
-            IDamageable damageable = other.GetComponentInParent<IDamageable>();
-            if (damageable == null)
+            if (_activeDamageRoutines.ContainsKey(damageable))
             {
                 return;
             }
 
-            if (!_timers.ContainsKey(damageable))
-            {
-                _timers.Add(damageable, 0f);
-            }
-
-            _timers[damageable] += Time.deltaTime;
-
-            if (_timers[damageable] >= tickInterval)
-            {
-                _timers[damageable] = 0f;
-                damageable.TakeDamage(damagePerTick);
-            }
+            Coroutine routine = StartCoroutine(DamageOverTimeRoutine(damageable));
+            _activeDamageRoutines.Add(damageable, routine);
         }
 
         private void OnTriggerExit2D(Collider2D other)
@@ -63,10 +44,59 @@ namespace BreezeInteractive.Runtime.Gameplay.Hazard
                 return;
             }
 
-            if (_timers.ContainsKey(damageable))
+            StopDamageRoutine(damageable);
+        }
+
+        private IEnumerator DamageOverTimeRoutine(IDamageable damageable)
+        {
+            while (damageable != null)
             {
-                _timers.Remove(damageable);
+                damageable.TakeDamage(damagePerTick);
+                yield return new WaitForSeconds(tickInterval);
             }
         }
+
+        private void StopDamageRoutine(IDamageable damageable)
+        {
+            if (!_activeDamageRoutines.TryGetValue(damageable, out Coroutine routine))
+            {
+                return;
+            }
+
+            if (routine != null)
+            {
+                StopCoroutine(routine);
+            }
+
+            _activeDamageRoutines.Remove(damageable);
+        }
+
+        private void OnDisable()
+        {
+            foreach (Coroutine routine in _activeDamageRoutines.Values)
+            {
+                if (routine != null)
+                {
+                    StopCoroutine(routine);
+                }
+            }
+
+            _activeDamageRoutines.Clear();
+        }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (damagePerTick < 0)
+            {
+                damagePerTick = 0;
+            }
+
+            if (tickInterval <= 0f)
+            {
+                tickInterval = 0.1f;
+            }
+        }
+#endif
     }
 }

@@ -51,5 +51,19 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Core
                 _currentAnimation = animationId;
             }
         }
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (animator == null)
+            {
+                animator = GetComponent<Animator>();
+            }
+
+            if (crossFadeDuration < 0f)
+            {
+                crossFadeDuration = 0f;
+            }
+        }
+#endif
     }
 }

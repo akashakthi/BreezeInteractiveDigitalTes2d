@@ -109,5 +109,15 @@ namespace BreezeInteractive.Runtime.Gameplay.UI.WorldSpace
 
             fillRenderer.enabled = newWidth > 0f;
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (fillRenderer == null)
+            {
+                fillRenderer = GetComponentInChildren<SpriteRenderer>();
+            }
+        }
+#endif
     }
 }
