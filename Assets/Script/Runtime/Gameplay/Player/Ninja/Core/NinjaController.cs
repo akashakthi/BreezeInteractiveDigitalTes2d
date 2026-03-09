@@ -11,6 +11,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Core
     [RequireComponent(typeof(NinjaInputReader))]
     [RequireComponent(typeof(NinjaHealth))]
     [RequireComponent(typeof(NinjaAnimator))]
+    [RequireComponent(typeof(NinjaAttackHitbox))]
     public sealed class NinjaController : MonoBehaviour
     {
         [Header("Movement")]
@@ -20,6 +21,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Core
         [Header("Action Timing")]
         [SerializeField] private float attackDuration = 0.35f;
         [SerializeField] private float hurtDuration = 0.3f;
+        [SerializeField] private float attackHitTime = 0.12f;
 
         [Header("References")]
         [SerializeField] private GroundChecker groundChecker;
@@ -28,6 +30,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Core
         private NinjaInputReader _input;
         private NinjaHealth _health;
         private NinjaAnimator _animator;
+        private NinjaAttackHitbox _attackHitbox;
 
         private NinjaContext _context;
         private NinjaStateMachine _stateMachine;
@@ -36,11 +39,13 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Core
         public float JumpForce => jumpForce;
         public float AttackDuration => attackDuration;
         public float HurtDuration => hurtDuration;
+        public float AttackHitTime => attackHitTime;
 
         public bool IsDead => _health != null && _health.IsDead;
         public float MoveInput => _input != null ? _input.MoveAxis : 0f;
         public bool HasMoveInput => Mathf.Abs(MoveInput) > 0.01f;
         public bool IsGrounded => groundChecker != null && groundChecker.IsGrounded();
+        public NinjaAttackHitbox AttackHitbox => _attackHitbox;
 
         private void Awake()
         {
@@ -48,6 +53,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Core
             _input = GetComponent<NinjaInputReader>();
             _health = GetComponent<NinjaHealth>();
             _animator = GetComponent<NinjaAnimator>();
+            _attackHitbox = GetComponent<NinjaAttackHitbox>();
 
             _context = new NinjaContext(
                 this,
@@ -55,11 +61,11 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Core
                 _input,
                 groundChecker,
                 _health,
+                _attackHitbox,
                 _rigidbody,
                 transform);
 
             _stateMachine = new NinjaStateMachine();
-
             RegisterStates();
         }
 

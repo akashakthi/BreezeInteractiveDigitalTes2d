@@ -3,14 +3,15 @@ using System.Collections;
 using UnityEngine;
 using BreezeInteractive.Runtime.Gameplay.Common.Combat;
 
-namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat
+namespace BreezeInteractive.Runtime.Gameplay.Enemy.Dummy
 {
-    public sealed class NinjaHealth : MonoBehaviour, IDamageable
+    public sealed class DummyTarget : MonoBehaviour, IDamageable
     {
-        [SerializeField] private int maxHealth = 100;
-        [SerializeField] private GameObject healthBarRoot;
-        [SerializeField] private bool destroyOwnerOnDeath = false;
+        [SerializeField] private int maxHealth = 200;
+        [SerializeField] private bool destroyOnDeath = true;
         [SerializeField] private float destroyDelay = 0.1f;
+        [SerializeField] private GameObject deathVisual;
+        [SerializeField] private GameObject healthBarRoot;
 
         public int CurrentHealth { get; private set; }
         public int MaxHealth => maxHealth;
@@ -18,7 +19,6 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat
         public float NormalizedHealth => maxHealth <= 0 ? 0f : (float)CurrentHealth / maxHealth;
 
         public event Action<int, int> HealthChanged;
-        public event Action<int> Damaged;
         public event Action Died;
 
         private bool _isDeathProcessing;
@@ -26,13 +26,6 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat
         private void Awake()
         {
             CurrentHealth = maxHealth;
-            HealthChanged?.Invoke(CurrentHealth, maxHealth);
-        }
-
-        public void ResetHealth()
-        {
-            CurrentHealth = maxHealth;
-            _isDeathProcessing = false;
             HealthChanged?.Invoke(CurrentHealth, maxHealth);
         }
 
@@ -51,7 +44,6 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat
             }
 
             HealthChanged?.Invoke(CurrentHealth, maxHealth);
-            Damaged?.Invoke(CurrentHealth);
 
             if (CurrentHealth <= 0)
             {
@@ -80,7 +72,12 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Combat
                 Destroy(healthBarRoot);
             }
 
-            if (destroyOwnerOnDeath)
+            if (deathVisual != null)
+            {
+                deathVisual.SetActive(true);
+            }
+
+            if (destroyOnDeath)
             {
                 yield return new WaitForSeconds(destroyDelay);
                 Destroy(gameObject);

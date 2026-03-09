@@ -12,6 +12,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Core
         public NinjaInputReader Input { get; }
         public GroundChecker GroundChecker { get; }
         public NinjaHealth Health { get; }
+        public NinjaAttackHitbox AttackHitbox { get; }
         public Rigidbody2D Rigidbody { get; }
         public Transform Transform { get; }
 
@@ -21,6 +22,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Core
             NinjaInputReader input,
             GroundChecker groundChecker,
             NinjaHealth health,
+            NinjaAttackHitbox attackHitbox,
             Rigidbody2D rigidbody,
             Transform transform)
         {
@@ -29,6 +31,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Core
             Input = input;
             GroundChecker = groundChecker;
             Health = health;
+            AttackHitbox = attackHitbox;
             Rigidbody = rigidbody;
             Transform = transform;
         }

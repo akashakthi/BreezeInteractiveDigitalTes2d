@@ -7,6 +7,7 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.FSM.States
     public sealed class NinjaAttackState : NinjaState
     {
         private float _timer;
+        private bool _hasAppliedDamage;
 
         public NinjaAttackState(NinjaContext context) : base(NinjaStateId.Attack, context)
         {
@@ -15,6 +16,8 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.FSM.States
         public override void Enter()
         {
             _timer = 0f;
+            _hasAppliedDamage = false;
+
             Controller.ConsumeAttackInput();
             Context.Animator.Play(NinjaAnimationId.Attack, true);
         }
@@ -22,6 +25,12 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.FSM.States
         public override void Update()
         {
             _timer += Time.deltaTime;
+
+            if (!_hasAppliedDamage && _timer >= Controller.AttackHitTime)
+            {
+                _hasAppliedDamage = true;
+                Context.AttackHitbox.PerformAttack();
+            }
 
             if (_timer >= Controller.AttackDuration)
             {
