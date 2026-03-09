@@ -12,12 +12,18 @@ namespace BreezeInteractive.Runtime.Gameplay.Player.Ninja.Input
         {
             MoveAxis = UnityEngine.Input.GetAxisRaw("Horizontal");
 
-            if (UnityEngine.Input.GetButtonDown("Jump"))
+            bool keyboardJump = UnityEngine.Input.GetButtonDown("Jump");
+            bool gamepadJump = UnityEngine.Input.GetKeyDown(KeyCode.JoystickButton1); // PS X
+
+            if (keyboardJump || gamepadJump)
             {
                 JumpPressed = true;
             }
 
-            if (UnityEngine.Input.GetKeyDown(KeyCode.J))
+            bool keyboardAttack = UnityEngine.Input.GetKeyDown(KeyCode.J);
+            bool gamepadAttack = UnityEngine.Input.GetKeyDown(KeyCode.JoystickButton0); // PS Square
+
+            if (keyboardAttack || gamepadAttack)
             {
                 AttackPressed = true;
             }
