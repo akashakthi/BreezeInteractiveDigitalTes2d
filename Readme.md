@@ -81,14 +81,3 @@ Key design decisions:
 
 ---
 
-# Project Structure
-Runtime
-├── Common
-│ └── Combat
-├── Player
-│ └── Ninja
-├── Enemy
-│ └── Dummy
-├── Hazard
-└── UI
-└── WorldSpace
